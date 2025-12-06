@@ -3,7 +3,7 @@
 **Sociograph** est un outil interactif de visualisation de graphes sociaux (sociogrammes). Il permet de cartographier les affinités au sein d'un groupe, de visualiser les connexions et d'organiser automatiquement les individus grâce à un moteur physique intelligent.
 
 🔗 **Démo en ligne :** [ https://joyxt.github.io/Sociograph/]
-*(Exemple : https://joyxt.github.io/Sociograph/)*
+
 
 <img width="1440" height="875" alt="image" src="https://github.com/user-attachments/assets/df9588a9-4069-477b-baf1-ab2b5e5f3668" />
 
