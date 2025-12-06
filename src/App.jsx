@@ -7,16 +7,18 @@ import ReactFlow, {
 } from 'reactflow';
 import 'reactflow/dist/style.css';
 
+// Import correct du store
 import useStore from './store/useStore';
+// Import correct des composants
 import CustomNode from './components/CustomNode';
 import ControlsOverlay from './components/ControlsOverlay';
 
-// On définit les types de nœuds hors du render pour la perf
 const nodeTypes = { sociographNode: CustomNode };
 
 function Sociograph() {
   const { 
-    nodes, edges, onNodesChange, onEdgesChange, onConnect
+    nodes, edges, onNodesChange, onEdgesChange, onConnect,
+    selectionMode 
   } = useStore();
 
   return (
@@ -33,13 +35,19 @@ function Sociograph() {
           className="bg-white"
           minZoom={0.1}
           deleteKeyCode="Delete"
+          
+          // Gestion du mode Sélection vs Pan
+          panOnDrag={!selectionMode} 
+          selectionOnDrag={selectionMode}
+          panOnScroll={true} 
+          selectionMode={selectionMode ? 'partial' : 'full'}
         >
           <Background variant="dots" gap={20} size={1} color="#e5e7eb" />
           <Controls />
           <MiniMap nodeColor="#93c5fd" style={{ height: 120 }} zoomable pannable />
         </ReactFlow>
         
-        {/* Interface utilisateur superposée */}
+        {/* L'interface de contrôle v1.3 */}
         <ControlsOverlay />
       </div>
     </div>

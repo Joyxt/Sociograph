@@ -1,36 +1,54 @@
-// Lecture du fichier TXT ligne par ligne
+// src/utils/fileHelpers.js
+
+// Lecture du fichier TXT avec Promise
 export const parseTxtFile = async (file) => {
-  const text = await file.text();
-  // Séparer par ligne, enlever les vides et les doublons potentiels
-  const lines = text.split(/\r?\n/).map(line => line.trim()).filter(line => line !== '');
-  return [...new Set(lines)];
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    
+    reader.onload = (event) => {
+      const text = event.target.result;
+      // Découper par ligne, nettoyer les espaces, retirer les vides
+      const lines = text.split(/\r?\n/)
+        .map(line => line.trim())
+        .filter(line => line !== '');
+      
+      // Retirer les doublons
+      const uniqueLines = [...new Set(lines)];
+      resolve(uniqueLines);
+    };
+
+    reader.onerror = (error) => reject(error);
+    
+    reader.readAsText(file);
+  });
 };
 
-// Placement aléatoire basique pour les nouveaux nœuds
+// Nouvelle version du placement (ne demande plus d'arguments)
 export const generateRandomPosition = () => {
-  // On place dans une zone visible de l'écran par défaut
-  const width = window.innerWidth * 0.6;
-  const height = window.innerHeight * 0.6;
-  const x = Math.random() * width + 100;
-  const y = Math.random() * height + 100;
+  // Génère une position aléatoire visible à l'écran
+  // Marge de 50px pour ne pas être collé au bord
+  const x = Math.random() * (window.innerWidth * 0.5) + 50;
+  const y = Math.random() * (window.innerHeight * 0.5) + 50;
 
   return { x, y };
 };
 
-// Sauvegarde JSON (.sog)
+// Sauvegarde JSON
 export const downloadSogFile = (data, filename) => {
-  // Nettoyage des données avant export (enlever les propriétés internes de ReactFlow si nécessaire)
   const cleanData = {
-      ...data,
+      projectName: data.projectName,
       nodes: data.nodes.map(({ id, type, position, data }) => ({ id, type, position, data })),
-      edges: data.edges.map(({ id, source, target, sourceHandle, targetHandle }) => ({ id, source, target, sourceHandle, targetHandle }))
+      edges: data.edges.map(({ id, source, target }) => ({ id, source, target }))
   };
 
   const blob = new Blob([JSON.stringify(cleanData, null, 2)], { type: 'application/json' });
   const url = URL.createObjectURL(blob);
+  
   const a = document.createElement('a');
   a.href = url;
-  a.download = `${filename.replace(/\s+/g, '_').toLowerCase()}.sog`;
+  const safeName = (filename || 'sociograph').replace(/[^a-z0-9]/gi, '_').toLowerCase();
+  a.download = `${safeName}.sog`;
+  
   document.body.appendChild(a);
   a.click();
   document.body.removeChild(a);
