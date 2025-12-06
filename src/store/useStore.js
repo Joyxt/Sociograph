@@ -1,0 +1,48 @@
+import { create } from 'zustand';
+import { addEdge, applyNodeChanges, applyEdgeChanges, MarkerType } from 'reactflow';
+
+const useStore = create((set, get) => ({
+  nodes: [],
+  edges: [],
+  projectName: 'Mon Sociogramme',
+
+  // Actions de base React Flow pour le déplacement et la sélection
+  onNodesChange: (changes) => {
+    set({
+      nodes: applyNodeChanges(changes, get().nodes),
+    });
+  },
+  onEdgesChange: (changes) => {
+    set({
+      edges: applyEdgeChanges(changes, get().edges),
+    });
+  },
+  // Action lors de la création d'un lien
+  onConnect: (connection) => {
+    set({
+      edges: addEdge({ 
+        ...connection, 
+        type: 'default', // type de lien standard (courbe de bézier)
+        animated: false,
+        // Style bleu clair comme demandé (Image 3)
+        style: { stroke: '#0ea5e9', strokeWidth: 3 }, 
+        markerEnd: { type: MarkerType.ArrowClosed, color: '#0ea5e9' },
+      }, get().edges),
+    });
+  },
+
+  // Actions spécifiques Sociograph
+  setNodes: (nodes) => set({ nodes }),
+  setEdges: (edges) => set({ edges }),
+  setProjectName: (name) => set({ projectName: name }),
+
+  loadGraph: (data) => {
+    set({
+      nodes: data.nodes || [],
+      edges: data.edges || [],
+      projectName: data.projectName || 'Sans titre'
+    });
+  },
+}));
+
+export default useStore;
